@@ -18,6 +18,11 @@ class HelpCallCreate(BaseModel):
     phone: Optional[str] = Field(default=None, max_length=32)
     lat: Optional[float] = Field(default=None, ge=-90, le=90)
     lon: Optional[float] = Field(default=None, ge=-180, le=180)
+    category: Optional[str] = Field(
+        default=None,
+        max_length=64,
+        description="Manuel kategori override. Verilmezse AI tahmin eder.",
+    )
 
 
 class HelpCallOut(BaseModel):

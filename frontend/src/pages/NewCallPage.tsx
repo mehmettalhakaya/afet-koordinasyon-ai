@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
-import { CATEGORY_LABELS, type HelpCall } from "../types";
+import { CATEGORY_LABELS, type Category, type HelpCall } from "../types";
 import { UrgencyBadge } from "../components/Badge";
 
 // Türkiye'nin 81 ili, alfabetik.
@@ -96,6 +96,8 @@ export default function NewCallPage() {
   const [district, setDistrict] = useState("");
   const [addressNote, setAddressNote] = useState("");
   const [peopleCount, setPeopleCount] = useState(1);
+  // "" = AI otomatik tespit etsin; bir kategori = manuel override
+  const [categoryOverride, setCategoryOverride] = useState<Category | "">("");
   const [submitting, setSubmitting] = useState(false);
   const [created, setCreated] = useState<HelpCall | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -111,12 +113,14 @@ export default function NewCallPage() {
         district: district || undefined,
         address_note: addressNote || undefined,
         people_count: peopleCount,
+        category: categoryOverride || undefined,
       });
       setCreated(res);
       setText("");
       setDistrict("");
       setAddressNote("");
       setPeopleCount(1);
+      setCategoryOverride("");
     } catch (err) {
       setError(String(err));
     } finally {
@@ -184,6 +188,23 @@ export default function NewCallPage() {
             value={peopleCount}
             onChange={(e) => setPeopleCount(Number(e.target.value))}
           />
+        </label>
+
+        <label>
+          Kategori (opsiyonel)
+          <select
+            value={categoryOverride}
+            onChange={(e) => setCategoryOverride(e.target.value as Category | "")}
+          >
+            <option value="">🤖 Otomatik (AI tespit etsin)</option>
+            {(Object.entries(CATEGORY_LABELS) as [Category, string][]).map(
+              ([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              )
+            )}
+          </select>
         </label>
 
         <div style={{ alignSelf: "end" }}>

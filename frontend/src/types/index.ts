@@ -39,6 +39,8 @@ export interface HelpCallCreate {
   phone?: string;
   lat?: number;
   lon?: number;
+  /** Opsiyonel manuel kategori override. Verilmezse AI tahmin eder. */
+  category?: Category;
 }
 
 export interface AnalyzeResponse {

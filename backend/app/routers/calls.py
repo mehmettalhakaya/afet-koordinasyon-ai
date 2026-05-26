@@ -55,8 +55,11 @@ def get_call(call_id: int, db: Session = Depends(get_db)):
 
 @router.post("/calls", response_model=schemas.HelpCallOut, status_code=201)
 async def create_call(payload: schemas.HelpCallCreate, db: Session = Depends(get_db)):
-    # 1) Sınıflandır
-    category, _scores = classifier_service.predict(payload.text)
+    # 1) Sınıflandır: manuel override varsa onu kullan, yoksa AI tahmin et
+    if payload.category:
+        category = payload.category
+    else:
+        category, _scores = classifier_service.predict(payload.text)
 
     # 2) Aciliyet skoru
     urgency, _breakdown = compute_urgency(
