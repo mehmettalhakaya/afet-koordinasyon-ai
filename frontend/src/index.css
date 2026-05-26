@@ -1,0 +1,470 @@
+/* AfetKoordinasyonAI - MTK stil dilinde tema
+   Lime accent, Instrument Serif headings, DM Sans body, noise overlay. */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0b;
+  --bg2: #111113;
+  --bg3: #1a1a1e;
+  --text: #e8e6e1;
+  --text-dim: #8a8884;
+  --accent: #c9f06b;       /* lime - ana vurgu */
+  --accent2: #6bc9f0;      /* cyan */
+  --accent3: #f06b8a;      /* pink */
+  --border: #2a2a2e;
+  --radius: 14px;
+
+  /* Aciliyet renkleri - MTK paletine uyumlu */
+  --u-critical: #f06b8a;   /* pink - çok acil */
+  --u-high: #ff8a5b;       /* turuncu - yüksek */
+  --u-medium: #c9f06b;     /* lime - orta */
+  --u-low: #6bc9f0;        /* cyan - düşük */
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+body, #root {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+/* Noise overlay - MTK imzası */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Scrollbar - ince */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.25s;
+}
+a:hover { color: var(--accent2); }
+
+/* Form ögeleri */
+input, textarea, select, button {
+  font: inherit;
+  color: inherit;
+}
+
+input, textarea, select {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  width: 100%;
+  transition: border-color 0.25s, background 0.25s;
+  font-family: inherit;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg3);
+}
+textarea { resize: vertical; font-family: "DM Sans", sans-serif; }
+
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 60px;            /* pill */
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  text-transform: none;
+  font-family: inherit;
+}
+button:hover:not(:disabled) {
+  background: #d4f57a;
+  border-color: #d4f57a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(201, 240, 107, 0.2);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── Layout ─── */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 10, 11, 0.7);
+  border-bottom: 1px solid var(--border);
+}
+.topnav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 3vw, 40px);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.nav-logo {
+  font-family: "Instrument Serif", serif;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  text-decoration: none;
+}
+.nav-logo .logo-dot {
+  color: var(--accent);
+}
+.nav-logo .logo-product {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border-left: 1px solid var(--border);
+  padding-left: 10px;
+  margin-left: 2px;
+  transition: color 0.25s;
+}
+.nav-logo .logo-product em {
+  color: var(--accent);
+  font-style: normal;
+  text-transform: none;   /* "AI" Turkce locale'de I'ya donmesin */
+}
+.nav-logo:hover .logo-product { color: var(--text); }
+
+/* Footer */
+.site-footer {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px clamp(16px, 3vw, 40px) 30px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 40px;
+}
+.site-footer .logo-dot { color: var(--accent); font-family: "Instrument Serif", serif; font-size: 1.1rem; }
+.site-footer a { font-weight: 600; }
+.nav-links {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.nav-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 60px;
+  border: 1px solid transparent;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.nav-link:hover { color: var(--accent); }
+.nav-link.active {
+  color: var(--accent);
+  border-color: var(--border);
+  background: var(--bg2);
+}
+
+.main {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 3vw, 40px) 60px;
+}
+
+/* ─── Disclaimer banner ─── */
+.disclaimer {
+  background: rgba(240, 107, 138, 0.08);
+  border: 1px solid rgba(240, 107, 138, 0.35);
+  color: #fcd5dd;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+.disclaimer strong { color: var(--accent3); font-weight: 700; letter-spacing: 0.04em; }
+
+/* ─── Section başlıkları ─── */
+h2 {
+  font-family: "Instrument Serif", serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+h2 em { color: var(--accent); font-style: italic; }
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.section-label::before {
+  content: "";
+  width: 16px;
+  height: 2px;
+  background: var(--accent);
+}
+
+/* ─── Kartlar ─── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+}
+.card .label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+}
+.card .value {
+  font-family: "Instrument Serif", serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1;
+}
+
+.section { margin: 28px 0; }
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ─── Tablolar ─── */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-size: 13px;
+}
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+tr:last-child td { border-bottom: none; }
+th {
+  background: var(--bg3);
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+tbody tr:hover { background: rgba(201, 240, 107, 0.03); }
+
+/* ─── Badge ve etiketler ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 60px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: "JetBrains Mono", monospace;
+}
+.badge-critical { background: rgba(240,107,138,0.12); color: var(--u-critical); border: 1px solid rgba(240,107,138,0.3); }
+.badge-high     { background: rgba(255,138,91,0.12);  color: var(--u-high);     border: 1px solid rgba(255,138,91,0.3); }
+.badge-medium   { background: rgba(201,240,107,0.12); color: var(--u-medium);   border: 1px solid rgba(201,240,107,0.3); }
+.badge-low      { background: rgba(107,201,240,0.12); color: var(--u-low);      border: 1px solid rgba(107,201,240,0.3); }
+
+.dup { color: var(--accent3); font-weight: 700; }
+
+/* ─── Harita ─── */
+.map-wrap {
+  height: calc(100vh - 180px);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+/* ─── Form ─── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 760px;
+  margin-top: 8px;
+}
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.form-grid label.full { grid-column: span 2; }
+
+/* ─── Progress bar (kategori dağılımı) ─── */
+.bar {
+  height: 8px;
+  background: var(--bg3);
+  border-radius: 60px;
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.4s ease;
+}
+
+/* ─── Keyword chips ─── */
+.kw {
+  display: inline-block;
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 60px;
+  padding: 4px 12px;
+  margin: 3px;
+  font-size: 0.75rem;
+  font-family: "JetBrains Mono", monospace;
+  transition: all 0.25s;
+}
+.kw:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Live rozet (WebSocket) ─── */
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 60px;
+  font-family: "JetBrains Mono", monospace;
+}
+.live-on  { color: var(--accent); background: rgba(201,240,107,0.1); border: 1px solid rgba(201,240,107,0.3); }
+.live-off { color: var(--accent3); background: rgba(240,107,138,0.1); border: 1px solid rgba(240,107,138,0.3); }
+
+/* ─── Leaflet popup özelleştirme ─── */
+.leaflet-popup-content-wrapper {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.leaflet-popup-tip { background: var(--bg2); border: 1px solid var(--border); }
+.leaflet-popup-content { margin: 14px 18px; font-family: "DM Sans", sans-serif; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--text-dim); }
+.leaflet-container a.leaflet-popup-close-button:hover { color: var(--accent); }
+
+/* MarkerCluster grupları için lime renk varyantları */
+.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+  font-family: "JetBrains Mono", monospace !important;
+  font-weight: 600 !important;
+}
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+  background: rgba(201, 240, 107, 0.3) !important;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 720px) {
+  .topnav-inner { height: auto; flex-direction: column; gap: 10px; padding: 14px; }
+  .nav-links { margin-left: 0; }
+  .row { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid label.full { grid-column: span 1; }
+  .map-wrap { height: 60vh; }
+}

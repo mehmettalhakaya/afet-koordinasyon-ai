@@ -1,0 +1,28 @@
+# Render Blueprint: AfetKoordinasyonAI backend
+# Render dashboard'unda "New > Blueprint" → bu dosyayı seç, otomatik kurar.
+services:
+  - type: web
+    name: afet-koordinasyon-ai-backend
+    runtime: python
+    plan: free                    # 750 saat/ay, 15 dk idle uyur
+    region: frankfurt             # Türkiye'ye en yakın
+    rootDir: backend
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python -m data.generate_synthetic_data
+    startCommand: |
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: afet-data
+      mountPath: /var/data        # SQLite ve classifier.pkl burada kalıcı
+      sizeGB: 1                   # free plan 1GB
+    envVars:
+      - key: AFET_DB_PATH
+        value: /var/data/afet.db
+      - key: PYTHON_VERSION
+        value: "3.12.5"
+      - key: CORS_ORIGINS
+        sync: false               # Vercel URL'in burada set edilecek

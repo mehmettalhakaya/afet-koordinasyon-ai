@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+pytest-cache-files-*/
+
+# Veritabanı ve model
+backend/afet.db
+backend/data/classifier.pkl
+backend/data/synthetic_calls.csv
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Editör
+.vscode/
+.idea/
+.DS_Store
