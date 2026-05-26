@@ -1,5 +1,9 @@
 # Render Blueprint: AfetKoordinasyonAI backend
 # Render dashboard'unda "New > Blueprint" → bu dosyayı seç, otomatik kurar.
+#
+# NOT: Free tier persistent disk desteklemiyor. SQLite ve classifier.pkl
+# her cold start'ta yeniden oluşturulur (sentetik CSV'den seed). Demo için
+# uygundur; production'da paid plan + disk eklenmeli.
 services:
   - type: web
     name: afet-koordinasyon-ai-backend
@@ -15,13 +19,7 @@ services:
       uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     autoDeploy: true
-    disk:
-      name: afet-data
-      mountPath: /var/data        # SQLite ve classifier.pkl burada kalıcı
-      sizeGB: 1                   # free plan 1GB
     envVars:
-      - key: AFET_DB_PATH
-        value: /var/data/afet.db
       - key: PYTHON_VERSION
         value: "3.12.5"
       - key: CORS_ORIGINS
