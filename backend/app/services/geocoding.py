@@ -150,10 +150,24 @@ DISTRICT_OFFSET = {
 }
 
 
+# Türkçe karakterleri ASCII'ye normalize et (key lookup için tek tip).
+# "İstanbul" -> "istanbul", "Şanlıurfa" -> "sanliurfa", vs.
+# Python'da "İ".lower() = "i" + combining dot, bu dict lookup'ı bozuyor.
+_TR_TRANSLATE = str.maketrans({
+    "ı": "i", "İ": "i",
+    "ş": "s", "Ş": "s",
+    "ç": "c", "Ç": "c",
+    "ğ": "g", "Ğ": "g",
+    "ü": "u", "Ü": "u",
+    "ö": "o", "Ö": "o",
+})
+
+
 def _key(s: Optional[str]) -> Optional[str]:
     if not s:
         return None
-    return s.strip().lower()
+    # Önce Türkçe karakterleri ASCII'ye çevir, sonra lower + strip
+    return s.translate(_TR_TRANSLATE).strip().lower()
 
 
 def approximate_coords(
