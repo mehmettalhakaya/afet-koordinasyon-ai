@@ -1,125 +1,273 @@
 # AfetKoordinasyonAI
 
-> Afet anında gelen yardım çağrılarını analiz eden, kategorilere ayıran,
-> aciliyet puanı veren, benzer çağrıları gruplayan ve harita üzerinde gösteren
-> **eğitim/demo amaçlı** web uygulaması.
->
-> Türkçe NLP · FastAPI · React + Leaflet · scikit-learn · SQLite
+> Afet anında gelen yardım çağrılarını **analiz eden**, **kategorilere ayıran**, **aciliyet puanı veren**, **benzer çağrıları gruplayan** ve çağrıları **harita üzerinde görselleştiren** eğitim/demo amaçlı web uygulaması.
+
+<p align="center">
+  <a href="https://afet-koordinasyon-ai.vercel.app/"><strong>Canlı Demo</strong></a>
+  ·
+  <a href="./backend/README.md">Backend Dokümantasyonu</a>
+  ·
+  <a href="./frontend/README.md">Frontend Dokümantasyonu</a>
+</p>
+
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white">
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white">
+  <img alt="React" src="https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react&logoColor=black">
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-Build-646CFF?style=for-the-badge&logo=vite&logoColor=white">
+  <img alt="scikit-learn" src="https://img.shields.io/badge/scikit--learn-NLP-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white">
+</p>
 
 ---
 
-## ⚠️ Önemli Uyarı
+## Önemli Uyarı
 
-Bu proje **GERÇEK acil durumlarda kullanılacak resmi bir koordinasyon sistemi
-DEĞİLDİR**. Sadece eğitim, demo, araştırma ve portföy amaçlıdır.
+Bu proje **gerçek acil durumlarda kullanılacak resmi bir afet koordinasyon sistemi değildir**.
 
-- Tüm veriler **sentetiktir**: gerçek kişi, gerçek telefon, gerçek adres içermez.
-- Üretimde kullanılmamalı, ilan edilmemeli, resmi bir kanal olarak sunulmamalıdır.
-- **Gerçek acil durumda lütfen 112'yi arayın. AFAD ve Kızılay gibi resmi
-  kurumları takip edin.**
+- Eğitim, araştırma, demo ve portföy amacıyla geliştirilmiştir.
+- Veriler sentetiktir; gerçek kişi, gerçek telefon, gerçek adres veya resmi vaka bilgisi içermez.
+- Üretimde, resmi kriz yönetiminde veya acil müdahale kararlarında kullanılmamalıdır.
+- Gerçek acil durumda **112** aranmalı; **AFAD**, **Kızılay** ve resmi kurum duyuruları takip edilmelidir.
 
-Bu uyarı arayüzün her sayfasında üst kısımda da gösterilir.
+Bu uyarı uygulama arayüzünde de görünür şekilde gösterilir.
 
 ---
 
-## İçindekiler
+## Demo
 
-1. [Özellikler](#özellikler)
-2. [Mimari](#mimari)
-3. [Kurulum](#kurulum)
-4. [Backend Çalıştırma](#backend-çalıştırma)
-5. [Frontend Çalıştırma](#frontend-çalıştırma)
-6. [Sentetik Veri Üretimi](#sentetik-veri-üretimi)
-7. [Docker ile Çalıştırma](#docker-ile-çalıştırma)
-8. [API Endpointleri](#api-endpointleri)
-9. [AI/NLP Yaklaşımı](#ainlp-yaklaşımı)
-10. [Aciliyet Skoru Mantığı](#aciliyet-skoru-mantığı)
-11. [Duplicate / Cluster Mantığı](#duplicate--cluster-mantığı)
-12. [Benzer Açık Kaynak Projelerden Öğrenilenler](#benzer-açık-kaynak-projelerden-öğrenilenler)
-13. [Geliştirme Fikirleri](#geliştirme-fikirleri)
-14. [Portföyde Nasıl Sunulur?](#portföyde-nasıl-sunulur)
-15. [Ekran Görüntüleri](#ekran-görüntüleri)
+Canlı uygulama:
+
+```text
+https://afet-koordinasyon-ai.vercel.app/
+```
+
+Uygulama; çağrı kaydı, analiz demosu, operasyon paneli, çağrı listesi, harita, marker clustering ve heatmap ekranlarından oluşur.
+
+---
+
+## Ekran Görüntüleri
+
+### Operasyon Paneli
+
+Dashboard ekranında toplam çağrı sayısı, ortalama aciliyet, şüpheli tekrar sayısı, kategori sayısı, en acil çağrılar ve son eklenen kayıtlar görüntülenir.
+
+![Operasyon Paneli](images/1.png)
+
+### Kategori ve Şehir Dağılımları
+
+Çağrılar kategori ve şehir bazında özetlenir. Bu ekran, hangi ihtiyaçların ve hangi bölgelerin öne çıktığını hızlıca görmek için kullanılır.
+
+![Kategori ve Şehir Dağılımları](images/2.png)
+
+### Harita Görünümü
+
+Çağrılar Türkiye haritası üzerinde gösterilir. Marker, heatmap ve karma görünüm arasında geçiş yapılabilir. Yakın konumdaki marker'lar otomatik gruplanır.
+
+![Harita Görünümü](images/3.png)
+
+### Çağrı Listesi
+
+Çağrılar kategori, şehir, aciliyet ve tekrar şüphesi gibi filtrelerle listelenebilir. Operatörün kayıtları hızlı taraması için tablo görünümü kullanılır.
+
+![Çağrı Listesi](images/4.png)
+
+### Yeni Çağrı Oluşturma
+
+Yeni çağrı ekranında çağrı metni, şehir, ilçe, demo adres notu, etkilenen kişi sayısı ve isteğe bağlı kategori bilgisi girilir. Kategori boş bırakılırsa sistem otomatik tahmin eder.
+
+![Yeni Çağrı Oluşturma](images/5.png)
+
+### Analiz Demo
+
+Analiz ekranı, metni veritabanına kaydetmeden sınıflandırma, aciliyet skoru ve benzer çağrı kontrolü yapmayı sağlar.
+
+![Analiz Demo](images/6.png)
 
 ---
 
 ## Özellikler
 
-- 📝 **Yardım çağrısı girişi** – Metin + şehir + ilçe + kişi sayısı (telefon ve gerçek adres istenmez).
-- 🏷️ **Türkçe çağrı sınıflandırma** – 10 kategori: `enkaz, saglik, su, gida, barinma, ilac, ulasim, kayip_kisi, elektrik_isinma, diger`.
-- 🚨 **0-100 aciliyet skoru** – Anahtar kelime + kategori ağırlığı + kişi sayısı bonusu.
-- 🔁 **Duplicate / cluster tespiti** – TF-IDF cosine + şehir/ilçe yerel boost.
-- 🗺️ **Türkiye haritası** – Leaflet üzerinde aciliyet rengine göre marker'lar, popup detay.
-- 📊 **Dashboard** – Toplam çağrı, ortalama aciliyet, kategori/şehir dağılımı, son eklenenler, en aciller, şüpheli tekrar.
-- 🧪 **"Analiz Et" demo** – Veritabanına yazmadan tahmin, skor ve benzerleri canlı göster.
-- ♻️ **Modeli yeniden eğitme** – `POST /api/retrain` ile tek tıkta retrain.
-- ✅ **Pytest testleri** – 16+ test, urgency, classifier ve API endpoint kapsamı.
-- 🔴 **Gerçek zamanlı WebSocket akışı** – Yeni çağrı eklendiğinde dashboard ve harita anlık güncellenir (manuel reload yok).
-- 🗂️ **Marker clustering** – Yakın marker'lar otomatik gruplanır, zoom yapılınca açılır (`react-leaflet-cluster`).
-- 🔥 **Heatmap (yoğunluk haritası)** – Çağrıların yoğunlaştığı bölgeler ısı renkleriyle görünür (`leaflet.heat`). Marker/Heatmap/İkisi geçişi.
-- ✅ **GitHub Actions CI** – Push'ta otomatik pytest (Python 3.11+3.12 matrix) + frontend type-check + build.
+- **Türkçe yardım çağrısı analizi:** Serbest metin formatındaki afet çağrıları analiz edilir.
+- **Kategori tahmini:** Çağrılar `enkaz`, `saglik`, `su`, `gida`, `barinma`, `ilac`, `ulasim`, `kayip_kisi`, `elektrik_isinma`, `diger` kategorilerine ayrılır.
+- **0-100 aciliyet skoru:** Anahtar kelimeler, kategori ağırlığı ve etkilenen kişi sayısı üzerinden yorumlanabilir skor üretilir.
+- **Benzer çağrı / duplicate tespiti:** TF-IDF ve cosine similarity ile aynı bölgeden gelen benzer çağrılar gruplanır.
+- **Harita görselleştirme:** Leaflet tabanlı marker, cluster ve heatmap görünümleri bulunur.
+- **Operasyon paneli:** Toplam çağrı, ortalama aciliyet, kategori dağılımı, şehir dağılımı ve son kayıtlar tek ekranda gösterilir.
+- **Analiz modu:** Çağrıyı kaydetmeden model çıktısı test edilebilir.
+- **Gerçek zamanlı güncelleme:** WebSocket ile yeni çağrılar dashboard ve harita tarafına anlık aktarılır.
+- **Sentetik veri üretimi:** Demo için otomatik örnek afet çağrısı üretilebilir.
+- **Test ve CI:** Backend testleri ve frontend build/type-check akışı GitHub Actions ile çalıştırılabilir.
+- **Docker desteği:** Backend ve frontend servisleri tek komutla ayağa kaldırılabilir.
+
+---
+
+## Teknoloji Stack'i
+
+### Backend
+
+- **FastAPI** — REST API ve WebSocket servisi
+- **SQLAlchemy** — ORM ve veritabanı erişimi
+- **SQLite** — demo veritabanı
+- **scikit-learn** — TF-IDF + Logistic Regression sınıflandırıcı
+- **pandas / numpy** — sentetik veri ve model hazırlığı
+- **pytest** — backend testleri
+
+### Frontend
+
+- **React 18**
+- **Vite**
+- **TypeScript**
+- **React Router**
+- **Leaflet / React Leaflet**
+- **react-leaflet-cluster**
+- **leaflet.heat**
+
+### DevOps / Dağıtım
+
+- **Vercel** — frontend dağıtımı
+- **Render** — backend dağıtım blueprint'i
+- **Docker Compose** — lokal çoklu servis çalıştırma
+- **GitHub Actions** — test ve build kontrolü
 
 ---
 
 ## Mimari
 
-```
-┌──────────────────────────────┐         ┌──────────────────────────────┐
-│  Frontend (Vite + React + TS)│  HTTP   │ Backend (FastAPI + SQLAlchemy)│
-│  - Dashboard / Map / Forms   │ ──────▶ │ - /api/calls /analyze /dashboard│
-│  - Leaflet (OSM tiles)       │         │ - TF-IDF + LogReg classifier │
-│  - React Router              │         │ - Urgency rule engine        │
-└──────────────────────────────┘         │ - Cosine dedup               │
-                                         └──────────────┬───────────────┘
-                                                        │
-                                                  SQLite (afet.db)
-                                                  + classifier.pkl
-                                                  + synthetic_calls.csv
+```text
+┌────────────────────────────────────┐
+│ Frontend                           │
+│ React + Vite + TypeScript          │
+│ Dashboard / Harita / Formlar       │
+│ Leaflet + Cluster + Heatmap        │
+└──────────────────┬─────────────────┘
+                   │ HTTP + WebSocket
+                   ▼
+┌────────────────────────────────────┐
+│ Backend                            │
+│ FastAPI + SQLAlchemy               │
+│ REST API / WebSocket / NLP servisleri│
+│ TF-IDF + Logistic Regression       │
+│ Urgency Engine + Deduplication     │
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ SQLite                             │
+│ help_calls tablosu                 │
+│ synthetic_calls.csv                │
+│ classifier.pkl                     │
+└────────────────────────────────────┘
 ```
 
-**Tek tablolu MVP** (`help_calls`). Çağrı geldiğinde:
-1. Sınıflandırıcı kategoriyi tahmin eder.
-2. Kural tabanlı aciliyet skoru hesaplanır.
-3. TF-IDF cosine ile son 500 çağrıya karşı benzerlik bakılır.
-4. Benzer varsa `cluster_id` paylaşılır, çok benzerse `duplicate_suspected=True`.
-5. Koordinat verilmediyse şehir/ilçe için yaklaşık demo koordinat üretilir.
+Yeni bir çağrı geldiğinde sistem şu akışı izler:
+
+1. Çağrı metni alınır.
+2. NLP sınıflandırıcısı kategori tahmini yapar.
+3. Kural tabanlı motor aciliyet skorunu hesaplar.
+4. Benzer çağrılar TF-IDF cosine similarity ile kontrol edilir.
+5. Benzer kayıt varsa cluster ilişkisi kurulur.
+6. Koordinat yoksa şehir/ilçe için yaklaşık demo koordinatı atanır.
+7. Kayıt dashboard ve harita ekranlarına WebSocket üzerinden iletilir.
+
+---
+
+## Proje Yapısı
+
+```text
+afet-koordinasyon-ai/
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── schemas/
+│   │   └── services/
+│   ├── data/
+│   ├── tests/
+│   ├── requirements.txt
+│   └── README.md
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── types/
+│   ├── package.json
+│   └── README.md
+├── images/
+│   ├── 1.png
+│   ├── 2.png
+│   ├── 3.png
+│   ├── 4.png
+│   ├── 5.png
+│   └── 6.png
+├── docker-compose.yml
+├── render.yaml
+├── DEPLOY.md
+└── README.md
+```
 
 ---
 
 ## Kurulum
 
-Gereksinimler:
+### Gereksinimler
+
 - Python 3.10+
 - Node.js 18+
-- (Opsiyonel) Docker + docker-compose
+- npm
+- Docker ve Docker Compose opsiyonel
+
+Projeyi klonlayın:
 
 ```bash
-git clone <bu-repo>
+git clone https://github.com/mehmettalhakaya/afet-koordinasyon-ai.git
 cd afet-koordinasyon-ai
 ```
+
+---
 
 ## Backend Çalıştırma
 
 ```bash
 cd backend
+
 python -m venv .venv
-# Windows:
+
+# Windows
 .venv\Scripts\activate
-# macOS/Linux:
+
+# macOS / Linux
 source .venv/bin/activate
 
 pip install -r requirements.txt
-python -m data.generate_synthetic_data        # 240 sentetik çağrı üret
+
+# Sentetik demo verisi üret
+python -m data.generate_synthetic_data
+
+# API sunucusunu başlat
 uvicorn app.main:app --reload --port 8000
 ```
 
-API hazır: <http://localhost:8000>
-Swagger: <http://localhost:8000/docs>
+Backend:
 
-Testler:
+```text
+http://localhost:8000
+```
+
+Swagger dokümantasyonu:
+
+```text
+http://localhost:8000/docs
+```
+
+Testleri çalıştırmak için:
 
 ```bash
 pytest
 ```
+
+---
 
 ## Frontend Çalıştırma
 
@@ -129,37 +277,42 @@ npm install
 npm run dev
 ```
 
-Açılış: <http://localhost:5173>
+Frontend:
 
-Dev sunucusu `/api` ve `/health` isteklerini backend'e proxy'ler.
-
-## Sentetik Veri Üretimi
-
-```bash
-cd backend
-python -m data.generate_synthetic_data            # varsayılan 240
-python -m data.generate_synthetic_data --n 500    # daha fazla
+```text
+http://localhost:5173
 ```
 
-Üretilen dosya: `backend/data/synthetic_calls.csv`
+Development modunda frontend, `/api` ve `/health` isteklerini backend'e proxy üzerinden yönlendirir.
 
-Sentetik veri:
-- 8 şehir × birkaç ilçe (Hatay, Kahramanmaraş, Adıyaman, Gaziantep, Malatya, Osmaniye, Diyarbakır, Adana)
-- 10 kategoriye dengesiz dağılmış (enkaz/sağlık daha sık)
-- Gerçek kişi/telefon/adres yok
+Production build:
+
+```bash
+npm run build
+```
+
+Type-check + build:
+
+```bash
+npm run build:strict
+```
+
+---
 
 ## Docker ile Çalıştırma
 
-Tek komutla backend + frontend:
+Repo kök dizininde:
 
 ```bash
 docker compose up --build
 ```
 
-- Frontend: <http://localhost:5173>
-- Backend:  <http://localhost:8000>
+Servisler:
 
-> Önce lokal Python+Node ile çalıştırıp doğrulamanız önerilir.
+```text
+Frontend: http://localhost:5173
+Backend:  http://localhost:8000
+```
 
 ---
 
@@ -167,17 +320,17 @@ docker compose up --build
 
 | Method | Path | Açıklama |
 |---|---|---|
-| GET | `/` | Servis adı, versiyon, uyarı |
-| GET | `/health` | Sağlık + sınıflandırıcı durumu |
-| GET | `/api/calls` | Filtreli liste (`city`, `category`, `min_urgency`, `duplicate_suspected`, `limit`) |
-| GET | `/api/calls/{id}` | Tek çağrı |
-| POST | `/api/calls` | Yeni çağrı (sınıflandır + skor + dedup) |
-| POST | `/api/analyze` | DB'ye yazmadan analiz |
-| GET | `/api/dashboard` | Panel istatistikleri |
-| POST | `/api/retrain` | Modeli yeniden eğit |
-| WS  | `/ws/calls` | Yeni çağrı broadcast akışı (gerçek zamanlı) |
+| `GET` | `/` | Servis adı, versiyon ve demo uyarısı |
+| `GET` | `/health` | Servis ve model sağlık kontrolü |
+| `GET` | `/api/calls` | Çağrıları filtreli listeleme |
+| `GET` | `/api/calls/{id}` | Tek çağrı detayı |
+| `POST` | `/api/calls` | Yeni çağrı oluşturma, sınıflandırma, skor ve dedup |
+| `POST` | `/api/analyze` | Veritabanına yazmadan analiz |
+| `GET` | `/api/dashboard` | Dashboard istatistikleri |
+| `POST` | `/api/retrain` | Sınıflandırıcıyı yeniden eğitme |
+| `WS` | `/ws/calls` | Yeni çağrı yayın akışı |
 
-Örnek istek:
+Örnek çağrı oluşturma isteği:
 
 ```bash
 curl -X POST http://localhost:8000/api/calls \
@@ -192,151 +345,147 @@ curl -X POST http://localhost:8000/api/calls \
 
 ---
 
-## AI/NLP Yaklaşımı
+## AI / NLP Yaklaşımı
 
-MVP, hızlı çalışsın diye **klasik ML** ile başlatıldı:
+Bu proje klasik makine öğrenmesi yaklaşımıyla hızlı, yorumlanabilir ve demo için düşük maliyetli bir NLP hattı kurar.
 
-- **Vektörleştirme:** `TfidfVectorizer(ngram_range=(1,2), sublinear_tf=True)` – Türkçeyi yeterince yakalar.
-- **Model:** `LogisticRegression(max_iter=1000, C=2.0, class_weight="balanced")` – yorumlanabilir ve hızlı.
-- **Eğitim verisi:** `backend/data/synthetic_calls.csv` (240 örnek).
-- **Servis:** İlk istekte pickle'lanır (`data/classifier.pkl`). `POST /api/retrain` ile yenilenir.
+- **Vektörleştirme:** TF-IDF
+- **Model:** Logistic Regression
+- **Benzerlik:** Cosine similarity
+- **Veri:** Sentetik Türkçe afet çağrıları
+- **Amaç:** Kategori tahmini, aciliyet skorlaması ve tekrar tespiti
 
-Doğruluk sentetik veri üzerinde ~0.85+ civarında. **Bu, abartılı bir sayı değildir** çünkü veriler şablon tabanlıdır - gerçek dünya verisinde değişir; "Geliştirme Fikirleri" bölümüne bakın.
-
-İleri yönlü tasarım:
-- `classifier_service.predict()` imzası multi-label'a yakın (her kategoriye olasılık döner).
-- `OneVsRestClassifier(LinearSVC)` ile multi-label'a geçiş trivial.
-- Türkçe transformer (BERTurk) entegrasyonu README'de "geliştirme fikri" olarak listelendi.
+Bu yaklaşım gerçek afet verisi için nihai çözüm değildir. Gerçek dünyada daha büyük veri, insan doğrulaması, güvenlik katmanları, yanlış bilgi tespiti ve kurumsal entegrasyon gerekir.
 
 ---
 
-## Aciliyet Skoru Mantığı
+## Aciliyet Skoru
 
-`backend/app/services/urgency.py` içindeki kural-tabanlı motor:
+Aciliyet skoru 0 ile 100 arasında hesaplanır.
 
+Temel mantık:
+
+```text
+skor =
+  taban puan
+  + anahtar kelime ağırlıkları
+  + kategori ağırlığı
+  + kişi sayısı bonusu
 ```
-score = clamp_0_100(
-    20                           # taban
-  + min(40, Σ anahtar_kelime_ağırlıkları)
-  + kategori_ağırlığı            # enkaz/saglik > su/gida
-  + min(20, ⌊log2(people_count) * 4⌋)
-)
-```
 
-Bantlar:
-- **80-100** → ÇOK ACİL (kırmızı koyu)
-- **50-79**  → YÜKSEK (kırmızı)
-- **20-49**  → ORTA (sarı)
-- **0-19**   → DÜŞÜK (gri)
+Örnek yüksek öncelikli sinyaller:
 
-Anahtar kelime ağırlıkları örneği: `mahsur=25`, `kanama=22`, `nefes alamıyor=30`,
-`bebek=22`, `çocuk=18`, `acil=12`...
+- `enkaz`
+- `mahsur`
+- `nefes alamıyor`
+- `kanama`
+- `bebek`
+- `çocuk`
+- `acil`
+- yüksek kişi sayısı
 
-`POST /api/analyze` cevabında `urgency_breakdown` ile **her bileşen ayrı
-gösterilir** – kullanıcı puanın neden o olduğunu anlayabilir (yorumlanabilirlik).
+Skor bantları:
+
+| Skor | Seviye |
+|---|---|
+| 80-100 | Çok acil |
+| 50-79 | Yüksek |
+| 20-49 | Orta |
+| 0-19 | Düşük |
 
 ---
 
 ## Duplicate / Cluster Mantığı
 
-`backend/app/services/deduplication.py`:
+Benzer veya tekrar olabilecek çağrılar şu mantıkla tespit edilir:
 
-1. Yeni çağrı geldiğinde son 500 çağrı çekilir.
-2. Birleştirilmiş corpus üzerinde TF-IDF + cosine similarity hesaplanır.
-3. Eşikler:
-   - **Şüpheli tekrar:** cosine ≥ 0.78
-   - **Aynı cluster:** cosine ≥ 0.55
-4. **Yerel boost:** Şehir + ilçe eşleşirse eşikler 0.08 düşer (aynı yerden gelen aynı içerik daha kolay duplicate sayılır).
-5. En benzerin `cluster_id`'si yeni çağrıya verilir; yoksa yeni cluster açılır.
-6. Benzer çağrıların `similar_count` alanları +1 artırılır.
+1. Yeni çağrı geldiğinde son çağrılar alınır.
+2. Metinler TF-IDF ile vektörleştirilir.
+3. Yeni çağrı ile eski çağrılar arasında cosine similarity hesaplanır.
+4. Aynı şehir/ilçe eşleşmesi varsa yerel benzerlik etkisi artırılır.
+5. Eşik üstündeki çağrılar aynı cluster'a bağlanır.
+6. Çok yüksek benzerlikte `duplicate_suspected` işaretlenir.
+
+Bu sayede aynı olay için farklı kişilerden gelen benzer bildirimler tekil olay kümeleri halinde takip edilebilir.
 
 ---
 
-## Benzer Açık Kaynak Projelerden Öğrenilenler
+## Dağıtım Notları
 
-Geliştirmeye başlamadan önce incelenen açık kaynak referansları
-(yalnızca fikir/mimari, kod kopyalanmadı):
+Frontend Vercel üzerinde, backend ise Render üzerinde çalışacak şekilde yapılandırılabilir.
 
-- **DisasterConnect** – gönüllü/kaynak eşleştirme; bizde MVP dışı, "geliştirme fikri".
-- **Turkey-Earthquake-2023-GeoData** – jeo-veri snapshot'ı; bizde Leaflet ile statik OSM yeterli.
-- **DisasterTechCrew / awesome-disastertech** – ekosistem haritası, hangi alanların eksik olduğunu göstermesi açısından faydalı.
-- **CrisisNLP, HumAID, crisis_nlp_progress** – kriz tweet sınıflandırma literatürü; ngram + linear classifier'ın güçlü baseline olduğunu doğruluyor.
-- **Humanitarian-Data-Classification** – fastText ile kategori atama; benzer bir yaklaşımı sklearn ile yaptık.
-- **Conflict-Crisis-Mapping-Project** – Ushahidi tarzı UI yaklaşımı; renkli marker + popup paterni bu projelerde yaygın.
+Render blueprint dosyası:
 
-**Çıkarımlar:**
-- Çoğu projede aciliyet skoru ya yok ya çok basit – burada açıkça yazılı kurallarla yaptık.
-- Türkçe NLP yetersiz – sentetik Türkçe veri ve TF-IDF baseline ile bu boşluğu doldurduk.
-- Çoğu repo testsiz – pytest ile kapatıldı.
-- Çoğu repo "tek koşuluk dataset" – burada `/api/retrain` ile canlı yeniden eğitme var.
+```text
+render.yaml
+```
+
+Frontend environment değişkeni örneği:
+
+```text
+VITE_API_BASE_URL=https://backend-domaininiz.onrender.com
+```
+
+Backend CORS ayarında Vercel domaini izinli olmalıdır.
+
+Daha ayrıntılı dağıtım adımları için:
+
+```text
+DEPLOY.md
+```
+
+---
+
+## Test
+
+Backend:
+
+```bash
+cd backend
+pytest
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
 
 ---
 
 ## Geliştirme Fikirleri
 
-İleri seviye, MVP dışı:
-
-- 🔌 **Gerçek zamanlı WebSocket çağrı akışı** – yeni çağrıları push ile yay.
-- 🤖 **Transformer tabanlı Türkçe model** – BERTurk fine-tune ile sınıflandırma.
-- 🏷️ **Multi-label sınıflandırma** – bir çağrı aynı anda hem `enkaz` hem `saglik` olabilir.
-- 🚗 **Gönüllü/ekip atama optimizasyonu** – kapasite vs talep eşleştirme.
-- 🗺️ **Rota optimizasyonu** – araç başına çağrı sıralaması (TSP/VRP yaklaşımı).
-- 📱 **Offline-first mobil uygulama** – ağ yokken bile çağrı al, sonra senkronize et.
-- 🚨 **Yanlış bilgi / anomali tespiti** – spike anomalileri, çelişen çağrılar.
-- 🔗 **AFAD / Kızılay / belediye entegrasyon taslağı** – salt teorik, kurumsal API'ler.
-- 🔐 **Rol bazlı admin paneli** – operatör, koordinatör, gönüllü rolleri (RBAC).
-- 🧠 **Yaklaşık komşu arama** – FAISS / hnswlib ile dedup'u büyük veride hızlı yap.
+- Multi-label sınıflandırma
+- BERTurk veya benzeri Türkçe transformer modeli
+- Gerçek zamanlı görev/ekip atama modülü
+- Rol bazlı kullanıcı sistemi
+- Anomali ve yanlış bilgi tespiti
+- Offline-first mobil uygulama
+- FAISS veya hnswlib ile daha hızlı büyük ölçekli benzerlik araması
+- Kurumsal entegrasyon için ayrı adapter katmanı
+- Operasyon kayıtları için denetim/audit log sistemi
 
 ---
 
-## Portföyde Nasıl Sunulur?
+## Sorumlu Kullanım
 
-1. **README başlangıcı** – problem + demo amacı + ekran görüntüsü.
-2. **GIF demo** – yeni çağrı oluştur, harita üzerinde marker beliriyor, dashboard güncelleniyor.
-3. **Tech stack rozeti** – FastAPI · React · scikit-learn · Leaflet · SQLite · pytest · Docker.
-4. **Vurgulanacaklar:**
-   - Türkçe NLP üzerinde çalışıyorsun (yerel problem).
-   - Sınıflandırma + aciliyet skoru + dedup üç ayrı problem; her birini ayrı servis olarak çözmüşsün.
-   - 16+ test, modüler kod, Docker.
-   - "Demo / gerçek değil" şeffaflığı – sorumlu mühendislik vurgusu.
-5. **CV satırı önerisi:**
-   *"AfetKoordinasyonAI – Türkçe afet çağrılarını TF-IDF + Logistic
-   Regression ile sınıflandıran, kural-tabanlı aciliyet skoru üreten ve
-   cosine benzerlikle duplicate tespiti yapan FastAPI + React + Leaflet
-   tabanlı demo platform. Pytest testli, Docker'lı, açık kaynak."*
-6. **Mülakat anlatımı:**
-   - Neden TF-IDF + LogReg? (Hız, yorumlanabilirlik, baseline.)
-   - Neden kural-tabanlı urgency? (ML için etiketli veri yok, deterministik.)
-   - Multi-label'a nasıl geçilir? (predict_proba zaten dağılım dönüyor, eşik koy.)
-   - Üretime nasıl gider? (Postgres, Celery, Redis cache, monitoring, RBAC.)
+Bu proje afet teknolojileri, kriz bilişimi ve Türkçe NLP alanında portföy/demonstrasyon amacıyla hazırlanmıştır. Gerçek afet yönetimi; resmi kurumlar, doğrulanmış veriler, saha ekipleri, hukuki süreçler, güvenlik mekanizmaları ve insan denetimi gerektirir.
 
----
-
-## Ekran Görüntüleri
-
-> Aşağıdaki yerlere `docs/` klasörüne PNG/GIF koyup linkle:
-
-- `docs/dashboard.png` – Panel görünümü
-- `docs/map.png` – Harita üzerinde renkli marker'lar
-- `docs/new_call.png` – Yeni çağrı formu
-- `docs/analyze.png` – Analiz demo (skor breakdown + benzer çağrılar)
-- `docs/demo.gif` – Uçtan uca akış
-
-```markdown
-![Dashboard](docs/dashboard.png)
-![Harita](docs/map.png)
-![Analiz](docs/analyze.png)
-```
+Bu nedenle proje yalnızca teknik demo olarak değerlendirilmelidir.
 
 ---
 
 ## Lisans
 
-MIT. Sentetik veriler bu repo ile birlikte üretilir ve özgürce kullanılabilir.
+Lisans bilgisi için repo içerisindeki lisans dosyasını kontrol edin. Lisans dosyası eklenmemişse, kodun kullanım koşulları netleşene kadar varsayılan olarak tüm hakları saklı kabul edilmelidir.
 
 ---
 
-## Tekrar Hatırlatma
+## Geliştirici
 
-Bu proje **GERÇEK acil durumlarda kullanılmamalıdır**. Acil durumda
-**112**'yi arayın, AFAD ve Kızılay'ı takip edin.
+**Mehmet Talha Kaya**
+
+- GitHub: [@mehmettalhakaya](https://github.com/mehmettalhakaya)
+- Demo: [afet-koordinasyon-ai.vercel.app](https://afet-koordinasyon-ai.vercel.app/)
