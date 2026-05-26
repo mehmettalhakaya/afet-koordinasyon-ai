@@ -127,13 +127,22 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# CORS: lokal dev + production Vercel domain'i icin
+# Production'da CORS_ORIGINS env var'i virgulle ayrilmis liste olarak ayarla:
+#   CORS_ORIGINS=https://afet.vercel.app,https://afetkoordinasyon.com
+import os as _os
+_extra_origins = [
+    o.strip() for o in _os.getenv("CORS_ORIGINS", "").split(",") if o.strip()
+]
+_default_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-    ],
+    allow_origins=_default_origins + _extra_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # tum Vercel preview URL'lerine izin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
