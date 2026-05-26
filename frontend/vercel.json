@@ -5,7 +5,7 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://AFET-BACKEND-URL.onrender.com/api/$1" },
-    { "source": "/health",   "destination": "https://AFET-BACKEND-URL.onrender.com/health" }
+    { "source": "/api/(.*)", "destination": "https://afet-koordinasyon-ai-backend.onrender.com/api/$1" },
+    { "source": "/health",   "destination": "https://afet-koordinasyon-ai-backend.onrender.com/health" }
   ]
 }
